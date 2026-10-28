@@ -1,0 +1,24 @@
+* text=auto
+
+# Windows 批处理必须是 CRLF，否则 cmd 可能解析异常
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# 源码统一 LF
+*.py  text eol=lf
+*.md  text eol=lf
+*.txt text eol=lf
+
+# 这几个文件在 Windows 上也保持 LF，避免每次 git add 都刷 warning
+/.gitattributes text eol=lf
+/.gitignore     text eol=lf
+LICENSE         text eol=lf
+
+# 二进制，不要做行尾/文本处理
+*.png binary
+*.ico binary
+*.exe binary
+*.dll binary
+*.img binary
+*.bin binary

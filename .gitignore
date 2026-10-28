@@ -1,0 +1,50 @@
+# ── 内置运行时 / 第三方二进制：不入库 ──────────────────────────
+# runtime/ 是打包用的 Python 3.14 嵌入式运行时（约 52 MB / 1787 文件）
+# platform-tools/ 是 Google 官方 adb / fastboot（约 17 MB）
+# 开源仓库只放源码，这两者按 README「获取依赖」一节自行下载
+runtime/
+platform-tools/
+*.zip
+*.7z
+*.exe.7z
+
+# ── 用户本地产物 ────────────────────────────────────────────────
+logs/
+out/
+backups/
+config.json
+
+# ── 救砖镜像 / 固件：体积大且可能涉及版权，禁止入库 ─────────────
+# 只保留目录骨架（.gitkeep），镜像由使用者自己丢进去
+rescue_files/**
+!rescue_files/**/
+!rescue_files/**/.gitkeep
+!rescue_files/README.md
+*.img
+*.bin
+*.elf
+*.mbn
+*.mbn.gz
+*.tar.md5
+*.tgz
+*.tar
+super.img
+*.pac
+*.ofp
+
+# ── Python ──────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyd
+.pytest_cache/
+.venv/
+venv/
+env/
+
+# ── 编辑器 / 系统 ───────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+Thumbs.db
+desktop.ini
+.DS_Store

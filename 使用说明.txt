@@ -1,0 +1,64 @@
+救砖工具 BrickRescue v1.2（便携版）
+====================================
+
+【怎么运行】
+  双击「启动救砖工具.bat」即可，不用装 Python，不用装 adb。
+  整个文件夹可以放在任意路径（桌面、U 盘、D 盘），拷到别的电脑上直接能用。
+
+【文件夹里都是什么】
+  brick_rescue.py      主程序（单文件，想改直接改它）
+  启动救砖工具.bat      图形界面入口
+  命令行模式.bat        没有图形界面时用（服务器/精简系统）
+  详细说明.md           完整文档（方案对照表、故障排查都在里面）
+  runtime\             内置 Python 3.14 运行时（tkinter 已含），删了就跑不起来
+  platform-tools\      内置 adb / fastboot（Google 官方 37.0.1）
+  rescue_files\        救砖文件库，把你的 boot.img / super.img / 线刷包丢进去
+    ├ boot\ dtbo\ vbmeta\ vendor_boot\ recovery\ super\    按类型分，丢进去就能自动识别
+    ├ fullpackage\     全量包（zip / tgz / tar.md5）
+    └ edl\             firehose（prog_firehose_ddr.elf/.mbn）
+  drivers\             🔧 驱动面板下载的 Google USB Driver 会放这里
+  logs\                运行日志（界面右下角「改日志目录」可换位置）
+  backups\             P09 备份 / P17 全字库备份
+  out\                 生成的 .bat / 方案报告 / 诊断报告 / EDL 指引
+
+【四步救砖】
+  ① 左边选症状（可多选）
+  ② 选匹配方案（按匹配度排序，P05/P10/P14 这类会清数据的带 ⛔）
+  ③ 确认救砖文件：点「＋ 文件」选单个镜像，「＋ 文件夹」选整个字库备份目录，
+     或「＋ 自定义」自己挑镜像、自己填分区名
+  ④ 「开始救砖」
+
+【18 套方案速查】
+  P09 先备份              救砖前必跑，用 fastboot fetch 抓回原分区
+  P01 内核回滚            只刷 boot，保留数据。刷内核变砖的第一手
+  P02 内核全家桶          boot + dtbo + vendor_boot 一起刷
+  P03 vbmeta 校验修复     治 dm-verity 红字、橙色警告
+  P04 A/B 换槽引导        set_active 切到另一个槽
+  P05 清数据救砖          fastboot -w，照片微信全没（高风险）
+  P06 侧载全量包          recovery 里 adb sideload
+  P07 EDL 9008 指引       生成操作指引，讲清 QFIL 怎么走
+  P08 fastboot 无响应     重启服务、换口、查驱动
+  P10 全量线刷            生成整包脚本
+  P11 刷回官方 recovery   治「一直进 recovery」
+  P12 只读诊断            只读，不改任何东西
+  P13 批量回刷            把导入目录里每个 img 刷回对应分区
+  P14 全量包直刷          fastboot update
+  P15 按官方脚本刷写      解析 flash_all.bat 逐条执行
+  P16 自定义刷写          自选镜像 + 自填分区名 + 选槽位（新）
+  P17 全字库备份          整机分区全备 + 生成 restore_all.bat（新）
+  P18 一键识别问题        自动采集 + 规则判定 + 推荐方案（新）
+  顶栏 🔧 驱动            扫描设备 / 一键装 Google USB Driver（新）
+
+【保留资料模式】
+  顶部勾选「保留资料（禁止清数据）」后：
+  - 会清空数据的方案（P05 清数据、P10 全量线刷、P14 整包直刷）直接置灰、按钮不可点
+  - 单个步骤里出现 -w / erase userdata / flash metadata 这类命令，会被标成「⛔拦下」并且不执行
+  - 批量回刷时只跳过 userdata/metadata/cache，其它分区照刷
+  - 官方 flash_all 包场景下优先挑 flash_all_except_storage 脚本
+  该开关记在 config.json 里，下次打开还是这个状态。
+
+【注意】
+  - 第一次跑 adb 时 Windows 防火墙可能弹窗，选「允许」或「取消」都行，不影响 USB 刷机
+  - 刷机前把手机电量充到 30% 以上
+  - BL 未解锁时 fastboot 会拒绝刷写，工具会在预检里直接拦下来
+  - 不确定哪儿坏了？先跑 P18 一键识别问题，它会直接告诉你下一个点哪个
